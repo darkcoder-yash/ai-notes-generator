@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configure Gemini API
-api_key = os.getenv("GOOGLE_API_KEY")
+api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 else:
-    st.error("API Key not found. Please set GOOGLE_API_KEY in your .env file or Streamlit Secrets.")
+    st.error("API Key not found. Please set GEMINI_API_KEY in your .env file or Streamlit Secrets.")
 
 def generate_content(topic):
     """Generates explanation, summary, and quiz using Gemini AI."""
