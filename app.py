@@ -1,7 +1,5 @@
 import streamlit as st
-st.write("NEW CLEAN BUILD V4")
-import google.generativeai
-st.write(google.generativeai.__version__)
+import google.generativeai as genai
 import os
 
 # MUST be first Streamlit command
@@ -10,17 +8,17 @@ st.set_page_config(
     page_icon="📝"
 )
 
-# Get API key from Streamlit Secrets
+# Now you can debug-print
+st.write("NEW CLEAN BUILD V4")
+
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
-    st.error("API key not found. Please add GEMINI_API_KEY in Streamlit Secrets.")
+    st.error("API key not found.")
     st.stop()
 
-# Configure Gemini
 genai.configure(api_key=api_key)
 
-# Use stable production model
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 def generate_notes(topic):
