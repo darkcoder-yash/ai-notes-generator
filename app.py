@@ -19,8 +19,8 @@ def generate_content(topic):
     """Generates explanation, summary, and quiz using Gemini AI."""
     
     try:
-        # Updated stable model name
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
+        # Use supported model for google.generativeai SDK
+        model = genai.GenerativeModel("gemini-pro")
 
         prompt = f"""
         Act as an expert educator. For the topic: "{topic}"
