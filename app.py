@@ -1,51 +1,41 @@
 import streamlit as st
+import google.generativeai as genai
 import os
-from dotenv import load_dotenv
-from google import genai
 
-# MUST be the first Streamlit command
+# MUST be first Streamlit command
 st.set_page_config(
     page_title="AI Notes & Quiz Generator",
-    page_icon="📝",
-    layout="centered"
+    page_icon="📝"
 )
 
-# Load environment variables (for local use)
-load_dotenv()
-
-# Get API key
-api_key = os.getenv("GEMINI_API_KEY")
+# Get API key from Streamlit Secrets
+api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
-    st.error("API Key not found. Please set GEMINI_API_KEY in Streamlit Secrets.")
+    st.error("API key not found. Please add GEMINI_API_KEY in Streamlit Secrets.")
     st.stop()
 
-# Initialize Gemini client (new SDK)
-client = genai.Client(api_key=api_key)
+# Configure Gemini
+genai.configure(api_key=api_key)
 
+# Use stable production model
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-def generate_content(topic):
+def generate_notes(topic):
     try:
         prompt = f"""
-        Act as an expert educator.
+You are an expert teacher.
 
-        Topic: {topic}
+Topic: {topic}
 
-        1. Provide a clear and beginner-friendly explanation.
-        2. Provide a 3-point summary.
-        3. Create 5 multiple-choice questions with answers clearly marked.
-        """
+1. Give a beginner-friendly explanation.
+2. Give a 3-point summary.
+3. Create 5 multiple-choice questions with answers marked.
+"""
 
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=prompt
-        )
+        response = model.generate_content(prompt)
 
-        # Safe response handling
-        if hasattr(response, "text") and response.text:
-            return response.text
-        else:
-            return "Error: No text returned from Gemini."
+        return response.text
 
     except Exception as e:
         return f"Error: {str(e)}"
@@ -58,12 +48,12 @@ st.write("Enter a topic to generate explanation, summary, and quiz.")
 
 topic = st.text_input("Topic")
 
-if st.button("Generate Learning Material"):
+if st.button("Generate"):
     if not topic.strip():
         st.warning("Please enter a topic.")
     else:
         with st.spinner("Generating..."):
-            result = generate_content(topic)
+            result = generate_notes(topic)
 
             if result.startswith("Error"):
                 st.error(result)
